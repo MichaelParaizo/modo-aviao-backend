@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${capituloForm.id != null} ? 'Editar Capítulo' : 'Novo Capítulo'">Capítulo</title>
+    <th:block th:replace="~{admin/fragments/style :: style}"></th:block>
+</head>
+<body>
+<header class="topbar">
+    <h1 th:text="${capituloForm.id != null} ? 'Editar Capítulo' : 'Novo Capítulo'">Capítulo</h1>
+</header>
+
+<main>
+    <p class="alert-error" th:if="${erroCheckpoint}" th:text="${erroCheckpoint}"></p>
+
+    <form method="post" th:action="@{/admin/capitulos/salvar}" th:object="${capituloForm}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" th:field="*{id}"/>
+
+        <label for="slug">Slug</label>
+        <input type="text" id="slug" th:field="*{slug}" required>
+
+        <label for="ordem">Ordem</label>
+        <input type="number" id="ordem" th:field="*{ordem}" required>
+
+        <label for="parte">Parte</label>
+        <input type="text" id="parte" th:field="*{parte}" required>
+
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" th:field="*{titulo}" required>
+
+        <label for="subtitulo">Subtítulo</label>
+        <input type="text" id="subtitulo" th:field="*{subtitulo}">
+
+        <label for="imagemCapa">Imagem de capa (URL)</label>
+        <input type="text" id="imagemCapa" th:field="*{imagemCapa}">
+
+        <label for="audioUrl">Áudio (URL)</label>
+        <input type="text" id="audioUrl" th:field="*{audioUrl}">
+
+        <label for="conteudoMarkdown">Conteúdo (Markdown)</label>
+        <textarea id="conteudoMarkdown" th:field="*{conteudoMarkdown}" class="textarea-grande"></textarea>
+
+        <fieldset class="checkpoint-section">
+            <legend>Checkpoint (opcional)</legend>
+            <p class="hint">Se os três campos abaixo ficarem em branco, este capítulo não terá checkpoint.</p>
+
+            <label for="espelhoDeTexto">Espelho de texto</label>
+            <textarea id="espelhoDeTexto" th:field="*{espelhoDeTexto}" rows="6"></textarea>
+
+            <label for="perguntaEscala">Pergunta de escala (1 a 5)</label>
+            <textarea id="perguntaEscala" th:field="*{perguntaEscala}" rows="3"></textarea>
+
+            <label for="cardDeBolso">Card de bolso</label>
+            <textarea id="cardDeBolso" th:field="*{cardDeBolso}" rows="3"></textarea>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a th:href="@{/admin}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

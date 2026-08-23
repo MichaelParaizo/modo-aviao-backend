@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${perguntaForm.id != null} ? 'Editar Pergunta' : 'Nova Pergunta'">Pergunta</title>
+    <th:block th:replace="~{admin/fragments/style :: style}"></th:block>
+</head>
+<body>
+<header class="topbar">
+    <h1 th:text="${perguntaForm.id != null} ? 'Editar Pergunta' : 'Nova Pergunta'">Pergunta</h1>
+</header>
+
+<main>
+    <form method="post" th:action="@{/admin/quiz/pergunta/salvar}" th:object="${perguntaForm}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" th:field="*{id}"/>
+
+        <label for="ordem">Ordem</label>
+        <input type="number" id="ordem" th:field="*{ordem}" required>
+
+        <label for="enunciado">Enunciado</label>
+        <textarea id="enunciado" th:field="*{enunciado}" rows="4" required></textarea>
+
+        <fieldset class="checkpoint-section">
+            <legend>Opções de resposta</legend>
+            <p class="hint">
+                Preencha até 5 opções. Deixe o texto em branco para não usar um slot.
+                Em "Modo de fuga", escolha o modo que a opção pontua, ou "Nenhum / âncora"
+                se essa opção não deve pontuar para nenhum modo.
+            </p>
+
+            <div th:each="opcao, iter : *{opcoes}"
+                 style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+
+                <input type="hidden" th:field="*{opcoes[__${iter.index}__].id}"/>
+
+                <label th:for="|opcao-texto-${iter.index}|" th:text="'Opção ' + ${iter.count} + ' — texto'">Texto</label>
+                <textarea th:id="|opcao-texto-${iter.index}|" th:field="*{opcoes[__${iter.index}__].texto}" rows="2"></textarea>
+
+                <label th:for="|opcao-modo-${iter.index}|">Modo de fuga</label>
+                <select th:id="|opcao-modo-${iter.index}|" th:field="*{opcoes[__${iter.index}__].modo}">
+                    <option value="">— Nenhum / âncora (não pontua) —</option>
+                    <option th:each="m : ${modosDisponiveis}" th:value="${m}" th:text="${m}"></option>
+                </select>
+
+                <label th:for="|opcao-ordem-${iter.index}|">Ordem da opção</label>
+                <input type="number" th:id="|opcao-ordem-${iter.index}|" th:field="*{opcoes[__${iter.index}__].ordem}">
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a th:href="@{/admin/quiz}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

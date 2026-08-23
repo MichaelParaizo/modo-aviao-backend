@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Modo Avião — Admin</title>
+    <th:block th:replace="~{admin/fragments/style :: style}"></th:block>
+</head>
+<body class="login-page">
+<div class="login-box">
+    <h1>Modo Avião — Admin</h1>
+
+    <p class="alert-error" th:if="${param.error}">Email ou senha incorretos.</p>
+
+    <form method="post" th:action="@{/admin/login}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <label for="username">Email</label>
+        <input type="text" id="username" name="username" autocomplete="username" required autofocus>
+
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+        <button type="submit" class="btn btn-primary">Entrar</button>
+    </form>
+</div>
+</body>
+</html>
