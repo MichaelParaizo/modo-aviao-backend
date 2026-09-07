@@ -11,24 +11,22 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ============================================================================
- * SOMENTE DESENVOLVIMENTO - @Profile("dev").
- *
- * Popula o quiz diagnostico "Qual e o seu Modo de Fuga?" completo (10
- * perguntas + opcoes + os 4 textos de resultado) de uma vez, para nao
- * precisar cadastrar tudo manualmente pelo admin. Roda uma vez a cada start
- * da aplicacao e nao faz nada se ja existir alguma QuizPergunta no banco
- * (idempotente).
+ * Roda em qualquer profile (dev e prod): o quiz e conteudo do produto, nao
+ * dado de teste, entao precisa existir tambem em producao. Popula o quiz
+ * diagnostico "Qual e o seu Modo de Fuga?" completo (10 perguntas + opcoes +
+ * os 4 textos de resultado) de uma vez, para nao precisar cadastrar tudo
+ * manualmente pelo admin. Roda uma vez a cada start da aplicacao e nao faz
+ * nada se ja existir alguma QuizPergunta no banco (idempotente) - em
+ * producao isso significa que so popula na primeira subida com banco vazio.
  * ============================================================================
  */
 @Slf4j
 @Component
-@Profile("dev")
 @RequiredArgsConstructor
 public class QuizSeeder implements CommandLineRunner {
 
@@ -49,7 +47,7 @@ public class QuizSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         if (quizPerguntaRepository.count() > 0) {
-            log.info("[DEV-SEED] Quiz ja possui perguntas cadastradas - seeder ignorado.");
+            log.info("[QUIZ-SEED] Quiz ja possui perguntas cadastradas - seeder ignorado.");
             return;
         }
 
@@ -84,7 +82,7 @@ public class QuizSeeder implements CommandLineRunner {
             quizResultadoRepository.save(resultado);
         }
 
-        log.warn("[DEV-SEED] Quiz inserido -> {} perguntas, {} opcoes, {} resultados",
+        log.warn("[QUIZ-SEED] Quiz inserido -> {} perguntas, {} opcoes, {} resultados",
                 perguntas.size(), totalOpcoes, resultados.size());
     }
 

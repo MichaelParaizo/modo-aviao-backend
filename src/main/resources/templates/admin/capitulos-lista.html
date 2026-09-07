@@ -10,6 +10,7 @@
     <h1>Capítulos</h1>
     <div class="topbar-actions">
         <a class="btn btn-secondary" th:href="@{/admin/quiz}">Quiz</a>
+        <a class="btn btn-secondary" th:href="@{/admin/acessos}">Acessos</a>
         <a class="btn btn-primary" th:href="@{/admin/capitulos/novo}">＋ Novo Capítulo</a>
         <form method="post" th:action="@{/admin/logout}" class="logout-form">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

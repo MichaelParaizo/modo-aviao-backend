@@ -26,6 +26,12 @@ public class ProgressController {
         return progressService.getSnapshot(authentication.getName());
     }
 
+    @DeleteMapping
+    public ProgressSnapshotDto resetarProgresso(Authentication authentication) {
+        progressService.resetarProgresso(authentication.getName());
+        return progressService.getSnapshot(authentication.getName());
+    }
+
     @PostMapping("/chapter/{slug}/complete")
     public ProgressSnapshotDto marcarConcluido(Authentication authentication, @PathVariable String slug) {
         progressService.marcarCapituloConcluido(authentication.getName(), slug);

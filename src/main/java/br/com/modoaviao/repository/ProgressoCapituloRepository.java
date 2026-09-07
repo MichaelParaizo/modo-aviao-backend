@@ -12,4 +12,6 @@ public interface ProgressoCapituloRepository extends JpaRepository<ProgressoCapi
     List<ProgressoCapitulo> findByUsuario(Usuario usuario);
 
     Optional<ProgressoCapitulo> findByUsuarioAndCapitulo(Usuario usuario, Capitulo capitulo);
+
+    void deleteByUsuario(Usuario usuario);
 }

@@ -116,6 +116,22 @@ public class ProgressService {
                 .ifPresent(cardSalvoRepository::delete);
     }
 
+    /**
+     * Apaga so o PROGRESSO do usuario (capitulos concluidos, respostas de
+     * checkpoint, cards salvos) - conteudo (capitulos, checkpoints, quiz)
+     * nunca e tocado aqui. As 3 tabelas apontam para Usuario e Capitulo, mas
+     * nunca uma para a outra, entao nao ha ordem de FK entre elas que
+     * importe.
+     */
+    @Transactional
+    public void resetarProgresso(String email) {
+        Usuario usuario = buscarUsuario(email);
+
+        progressoCapituloRepository.deleteByUsuario(usuario);
+        respostaCheckpointRepository.deleteByUsuario(usuario);
+        cardSalvoRepository.deleteByUsuario(usuario);
+    }
+
     private Usuario buscarUsuario(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario autenticado nao encontrado: " + email));

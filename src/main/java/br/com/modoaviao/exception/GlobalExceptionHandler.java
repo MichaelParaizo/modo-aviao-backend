@@ -30,6 +30,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
     }
 
+    @ExceptionHandler(AcessoNaoAutorizadoException.class)
+    public ResponseEntity<Map<String, String>> handleAcessoNaoAutorizado(AcessoNaoAutorizadoException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+    }
+
     @ExceptionHandler(CapituloNaoEncontradoException.class)
     public ResponseEntity<Map<String, String>> handleCapituloNaoEncontrado(CapituloNaoEncontradoException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));

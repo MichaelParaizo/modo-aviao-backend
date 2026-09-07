@@ -14,4 +14,6 @@ public interface CardSalvoRepository extends JpaRepository<CardSalvo, Long> {
     Optional<CardSalvo> findByUsuarioAndCapitulo(Usuario usuario, Capitulo capitulo);
 
     void deleteByUsuarioAndCapitulo(Usuario usuario, Capitulo capitulo);
+
+    void deleteByUsuario(Usuario usuario);
 }

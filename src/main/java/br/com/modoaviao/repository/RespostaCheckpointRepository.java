@@ -12,4 +12,6 @@ public interface RespostaCheckpointRepository extends JpaRepository<RespostaChec
     List<RespostaCheckpoint> findByUsuario(Usuario usuario);
 
     Optional<RespostaCheckpoint> findByUsuarioAndCapitulo(Usuario usuario, Capitulo capitulo);
+
+    void deleteByUsuario(Usuario usuario);
 }

@@ -27,3 +27,11 @@ out/
 ### OS ###
 .DS_Store
 Thumbs.db
+
+### Credenciais locais ###
+application-local.properties
+src/main/resources/application-local.properties
+
+### Crash dumps da JVM ###
+hs_err_pid*.log
+replay_pid*.log
