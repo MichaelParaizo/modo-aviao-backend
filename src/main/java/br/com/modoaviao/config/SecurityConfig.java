@@ -67,6 +67,12 @@ public class SecurityConfig {
             throws Exception {
         http
                 .securityMatcher("/admin/**")
+                // O admin e servido pelo mesmo dominio do backend (same-origin) -
+                // nao ha motivo pra essa cadeia sequer avaliar CORS. Desabilitado
+                // explicitamente (em vez de so nao chamar .cors()) para deixar
+                // claro que e proposital e blindar contra um futuro refactor que
+                // acabe aplicando o corsConfigurationSource aqui tambem.
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login").permitAll()
                         .anyRequest().hasRole("ADMIN"))
