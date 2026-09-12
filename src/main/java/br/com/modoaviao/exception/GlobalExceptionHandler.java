@@ -55,6 +55,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
     }
 
+    @ExceptionHandler(CodigoRecuperacaoInvalidoException.class)
+    public ResponseEntity<Map<String, String>> handleCodigoRecuperacaoInvalido(CodigoRecuperacaoInvalidoException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+    }
+
     // O usuario do token nao existe mais no banco (ex: deletado enquanto o
     // token ainda era valido). O front deve tratar isso pedindo novo login,
     // nao como um erro interno opaco.

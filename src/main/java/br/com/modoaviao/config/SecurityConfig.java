@@ -104,7 +104,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Preflight do navegador (CORS) nao deve exigir autenticacao.
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/auth/login", "/auth/signup", "/auth/logout").permitAll()
+                        .requestMatchers("/auth/login", "/auth/signup", "/auth/logout",
+                                "/auth/forgot-password", "/auth/reset-password").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
