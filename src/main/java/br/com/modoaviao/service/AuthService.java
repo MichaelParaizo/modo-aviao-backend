@@ -65,12 +65,14 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        String email = normalizarEmail(request.getEmail());
+
         // Lanca AuthenticationException (tratada pelo GlobalExceptionHandler) se email/senha nao baterem.
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha()));
+                new UsernamePasswordAuthenticationToken(email, request.getSenha()));
 
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario autenticado nao encontrado: " + request.getEmail()));
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario autenticado nao encontrado: " + email));
 
         String token = jwtService.generateToken(usuario);
 
