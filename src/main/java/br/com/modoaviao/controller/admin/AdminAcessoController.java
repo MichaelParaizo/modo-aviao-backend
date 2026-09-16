@@ -2,10 +2,10 @@ package br.com.modoaviao.controller.admin;
 
 import br.com.modoaviao.model.EmailAutorizado;
 import br.com.modoaviao.repository.EmailAutorizadoRepository;
+import br.com.modoaviao.service.EmailAutorizadoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AdminAcessoController {
 
     private final EmailAutorizadoRepository emailAutorizadoRepository;
+    private final EmailAutorizadoService emailAutorizadoService;
 
     @GetMapping("/admin/acessos")
     public String listar(Model model) {
@@ -25,28 +26,14 @@ public class AdminAcessoController {
     }
 
     @PostMapping("/admin/acessos/adicionar")
-    @Transactional
-    public String adicionar(@RequestParam String email, Model model) {
-        String emailNormalizado = normalizar(email);
-
-        if (!emailAutorizadoRepository.existsByEmailIgnoreCase(emailNormalizado)) {
-            EmailAutorizado autorizado = new EmailAutorizado();
-            autorizado.setEmail(emailNormalizado);
-            autorizado.setOrigem("manual");
-            emailAutorizadoRepository.save(autorizado);
-        }
-
+    public String adicionar(@RequestParam String email) {
+        emailAutorizadoService.liberarEmail(email, "manual");
         return "redirect:/admin/acessos";
     }
 
     @PostMapping("/admin/acessos/remover")
-    @Transactional
     public String remover(@RequestParam String email) {
-        emailAutorizadoRepository.deleteByEmailIgnoreCase(normalizar(email));
+        emailAutorizadoService.removerEmail(email);
         return "redirect:/admin/acessos";
-    }
-
-    private String normalizar(String email) {
-        return email == null ? null : email.trim().toLowerCase();
     }
 }

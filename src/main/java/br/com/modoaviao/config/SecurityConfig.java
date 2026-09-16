@@ -106,6 +106,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/login", "/auth/signup", "/auth/logout",
                                 "/auth/forgot-password", "/auth/reset-password").permitAll()
+                        // Protegida pelo Hottok (validado no proprio controller), nao por
+                        // JWT - a Hotmart nao tem (nem deveria ter) um token nosso.
+                        .requestMatchers("/webhook/hotmart").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
