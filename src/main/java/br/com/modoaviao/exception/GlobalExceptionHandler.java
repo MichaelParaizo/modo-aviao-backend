@@ -60,6 +60,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
     }
 
+    // Falha ao chamar a API do Mercado Pago (rede, credencial invalida,
+    // resposta inesperada). 502 porque o erro e de um sistema upstream, nao
+    // nosso - e a mensagem e generica de proposito, pra nao vazar detalhes
+    // da integracao (token, payload, etc.) pro cliente.
+    @ExceptionHandler(PagamentoIndisponivelException.class)
+    public ResponseEntity<Map<String, String>> handlePagamentoIndisponivel(PagamentoIndisponivelException e) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(Map.of("error", e.getMessage()));
+    }
+
     // O usuario do token nao existe mais no banco (ex: deletado enquanto o
     // token ainda era valido). O front deve tratar isso pedindo novo login,
     // nao como um erro interno opaco.

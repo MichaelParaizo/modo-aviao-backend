@@ -106,6 +106,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/login", "/auth/signup", "/auth/logout",
                                 "/auth/forgot-password", "/auth/reset-password").permitAll()
+                        // A pessoa ainda nao tem conta nesse ponto - ela informa o
+                        // email na landing e vai pagar antes de existir Usuario.
+                        .requestMatchers("/pagamento/criar").permitAll()
+                        // Protegida pela assinatura HMAC (validada no proprio
+                        // controller), nao por JWT.
+                        .requestMatchers("/webhook/mercadopago").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
