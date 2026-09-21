@@ -64,10 +64,28 @@ public class MercadoPagoWebhookController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        // A partir daqui a notificacao e legitima (assinatura confere). Uma
+        // vez validada, o Mercado Pago precisa ouvir "200, recebido" mesmo
+        // quando NAO conseguimos processar o conteudo (order id invalido/de
+        // teste, order sem external_reference, pedido que nao existe no
+        // nosso banco, erro de rede pro MP, etc.) - um 5xx aqui faz ele
+        // reenviar a mesma notificacao indefinidamente, o que nao ajuda em
+        // nada quando o problema e dado invalido, nao uma falha transitoria
+        // nossa. Falha de processamento vira log, nunca vira erro HTTP.
+        try {
+            processarNotificacao(payload, dataId);
+        } catch (Exception e) {
+            log.error("[MP-WEBHOOK] Falha ao processar notificacao (assinatura ja validada) - dataId={}", dataId, e);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    private void processarNotificacao(JsonNode payload, String dataId) {
         String type = payload == null ? null : textoOuNulo(payload, "type");
         if (!"order".equals(type) || dataId == null || dataId.isBlank()) {
             log.info("[MP-WEBHOOK] Notificacao ignorada (type={} dataId={})", type, dataId);
-            return ResponseEntity.ok().build();
+            return;
         }
 
         Map<?, ?> order = mercadoPagoService.consultarOrder(dataId);
@@ -78,7 +96,7 @@ public class MercadoPagoWebhookController {
         if (!STATUS_PROCESSADO.equals(status)) {
             log.info("[MP-WEBHOOK] Order {} ainda nao esta paga (status={}) - nada a liberar por enquanto",
                     dataId, status);
-            return ResponseEntity.ok().build();
+            return;
         }
 
         Object externalReferenceObj = order.get("external_reference");
@@ -87,13 +105,13 @@ public class MercadoPagoWebhookController {
         if (externalReference == null || externalReference.isBlank()) {
             log.warn("[MP-WEBHOOK] Order paga sem external_reference - nao foi possivel associar a um Pedido. orderId={}",
                     dataId);
-            return ResponseEntity.ok().build();
+            return;
         }
 
         Optional<Pedido> pedidoOpt = pedidoRepository.findByExternalReference(externalReference);
         if (pedidoOpt.isEmpty()) {
             log.warn("[MP-WEBHOOK] Nenhum Pedido encontrado para externalReference={}", externalReference);
-            return ResponseEntity.ok().build();
+            return;
         }
 
         Pedido pedido = pedidoOpt.get();
@@ -102,7 +120,7 @@ public class MercadoPagoWebhookController {
         // notificacao), nao repete o trabalho - so confirma e sai.
         if (STATUS_PEDIDO_PAGO.equals(pedido.getStatus())) {
             log.info("[MP-WEBHOOK] Pedido {} ja estava pago - notificacao duplicada ignorada", pedido.getId());
-            return ResponseEntity.ok().build();
+            return;
         }
 
         emailAutorizadoService.liberarEmail(pedido.getEmail(), "mercadopago");
@@ -111,8 +129,6 @@ public class MercadoPagoWebhookController {
 
         log.info("[MP-WEBHOOK] Email liberado -> {} (pedido id={}, order={})",
                 pedido.getEmail(), pedido.getId(), dataId);
-
-        return ResponseEntity.ok().build();
     }
 
     private String textoOuNulo(JsonNode node, String campo) {
